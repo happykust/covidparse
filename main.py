@@ -17,36 +17,40 @@ for url in urls:
     # Parsing HTML document
     parsed_html = BeautifulSoup(response.text, "lxml")
 
-    # Title with period of news
-    title = parsed_html.find("div", "article-detail__content").find("h3").text
-    # HTML table body
-    table = parsed_html.find("div", "u-table-cv__wrapper").find("tbody")
+    try:
+        # Title with period of news
+        title = parsed_html.find("div", "article-detail__content").find("h3").text
+        # HTML table body
+        table = parsed_html.find("div", "u-table-cv__wrapper").find("tbody")
 
-    # Date of the end period
-    end_period_date = title.split("-")[1].replace(")", "").replace("\n", "").replace(" ", "")
+        # Date of the end period
+        end_period_date = title.split("-")[1].replace(")", "").replace("\n", "").replace(" ", "")
 
-    # Go through all regions (rows) in table and garbage data
-    for el in table.find_all("tr")[1:]:
-        # All values for current region
-        values = el.find_all("td")
+        # Go through all regions (rows) in table and garbage data
+        for el in table.find_all("tr")[1:]:
+            # All values for current region
+            values = el.find_all("td")
 
-        region = values[0].text.strip()
-        hospitalized = values[1].text.strip().replace(" ", "")
-        recovered = values[2].text.strip().replace(" ", "")
-        revealed = values[3].text.strip().replace(" ", "")
-        died = values[4].text.strip().replace(" ", "")
+            region = values[0].text.strip()
+            hospitalized = values[1].text.strip().replace(" ", "")
+            recovered = values[2].text.strip().replace(" ", "")
+            revealed = values[3].text.strip().replace(" ", "")
+            died = values[4].text.strip().replace(" ", "")
 
-        # Add region to dict
-        if region not in results:
-            results[region] = {}
+            # Add region to dict
+            if region not in results:
+                results[region] = {}
 
-        # Save data to dict
-        results[region][end_period_date] = {
-            "hospitalized": hospitalized,
-            "recovered": recovered,
-            "revealed": revealed,
-            "died": died
-        }
+            # Save data to dict
+            results[region][end_period_date] = {
+                "hospitalized": hospitalized,
+                "recovered": recovered,
+                "revealed": revealed,
+                "died": died
+            }
+    except Exception as e:
+        print(f"Error: {e}")
+        continue
 
     print("OK")
 
